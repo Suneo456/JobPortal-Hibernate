@@ -1,8 +1,28 @@
+# Java
+*.class
+
+# Maven
 target/
+
+# IntelliJ IDEA
 .idea/
 *.iml
-.vscode/
+
+# Eclipse
 .classpath
 .project
 .settings/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
 .env
+application-local.properties

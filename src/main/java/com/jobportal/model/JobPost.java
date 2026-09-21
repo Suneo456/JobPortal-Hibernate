@@ -1,11 +1,28 @@
 package com.jobportal.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "job_post")
 public class JobPost {
 
+    @Id
+    @Column(name = "post_id")
     private int postId;
+
+    @Column(name = "user_id")
     private int userId;
+
+    @Column(name = "post_profile")
     private String postProfile;
+
+    @Column(name = "post_desc")
     private String postDesc;
+
+    @Column(name = "req_experience")
     private Integer reqExperience;
 
     public JobPost() {
@@ -13,6 +30,7 @@ public class JobPost {
 
     public JobPost(int postId, int userId, String postProfile,
                    String postDesc, Integer reqExperience) {
+
         this.postId = postId;
         this.userId = userId;
         this.postProfile = postProfile;
@@ -61,7 +79,6 @@ public class JobPost {
     }
 
     @Override
-
     public String toString() {
         return "JobPost{" +
             "postId=" + postId +

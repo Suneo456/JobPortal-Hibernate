@@ -1,8 +1,9 @@
 package com.jobportal;
 
-import com.jobportal.dao.JobPostDAO;
-import com.jobportal.dao.JobTechStackDAO;
-import com.jobportal.dao.UserDAO;
+import com.jobportal.Entity.JobPostDAO;
+import com.jobportal.Entity.JobTechStackDAO;
+import com.jobportal.Entity.UserDAO.UserDAO;
+import com.jobportal.config.HibernateUtil;
 import com.jobportal.model.JobPost;
 import com.jobportal.model.JobTechStack;
 import com.jobportal.model.User;
@@ -11,67 +12,87 @@ import java.util.Scanner;
 
 public class Main {
 
-    private static final Scanner sc = new Scanner(System.in);
+    static Scanner sc = new Scanner(System.in);
 
-    private static final UserDAO userDAO = new UserDAO();
-    private static final JobPostDAO jobPostDAO = new JobPostDAO();
-    private static final JobTechStackDAO techDAO = new JobTechStackDAO();
+    static UserDAO userDAO = new UserDAO();
+    static JobPostDAO jobPostDAO = new JobPostDAO();
+    static JobTechStackDAO techDAO = new JobTechStackDAO();
 
     public static void main(String[] args) {
 
-        while (true) {
-            System.out.println("\n========== JOB PORTAL JDBC CRUD ==========");
-            System.out.println("1. User CRUD");
-            System.out.println("2. Job Post CRUD");
-            System.out.println("3. Job Tech Stack CRUD");
-            System.out.println("4. Exit");
-            System.out.print("Enter choice: ");
+        int choice;
 
-            int choice = readInt();
+        do {
+
+            System.out.println("\n=================================");
+            System.out.println("        JOB PORTAL SYSTEM");
+            System.out.println("=================================");
+            System.out.println("1. User Management");
+            System.out.println("2. Job Post Management");
+            System.out.println("3. Technology Management");
+            System.out.println("4. Exit");
+            System.out.println("=================================");
+            System.out.print("Enter your choice: ");
+
+            choice = sc.nextInt();
 
             switch (choice) {
+
                 case 1:
                     userMenu();
                     break;
+
                 case 2:
                     jobPostMenu();
                     break;
+
                 case 3:
-                    techMenu();
+                    technologyMenu();
                     break;
+
                 case 4:
-                    System.out.println("Application closed.");
-                    sc.close();
-                    return;
+                    System.out.println("\nThank you for using Job Portal!");
+                    HibernateUtil.shutdown();
+                    break;
+
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice! Please try again.");
             }
-        }
+
+        } while (choice != 4);
+
+        sc.close();
     }
 
-    private static void userMenu() {
-        while (true) {
-            System.out.println("\n---------- USER CRUD ----------");
+
+    // =========================================================
+    // USER MENU
+    // =========================================================
+
+    public static void userMenu() {
+
+        int choice;
+
+        do {
+
+            System.out.println("\n=================================");
+            System.out.println("        USER MANAGEMENT");
+            System.out.println("=================================");
             System.out.println("1. Add User");
             System.out.println("2. View All Users");
-            System.out.println("3. View User By ID");
+            System.out.println("3. Search User by ID");
             System.out.println("4. Update User");
             System.out.println("5. Delete User");
-            System.out.println("6. Back");
-            System.out.print("Enter choice: ");
+            System.out.println("6. Back to Main Menu");
+            System.out.println("=================================");
+            System.out.print("Enter your choice: ");
 
-            int choice = readInt();
+            choice = sc.nextInt();
 
             switch (choice) {
-                case 1:
-                    System.out.print("Enter ID: ");
-                    int id = readInt();
-                    System.out.print("Enter username: ");
-                    String username = sc.nextLine();
-                    System.out.print("Enter password: ");
-                    String password = sc.nextLine();
 
-                    userDAO.addUser(new User(id, username, password));
+                case 1:
+                    addUser();
                     break;
 
                 case 2:
@@ -79,145 +100,267 @@ public class Main {
                     break;
 
                 case 3:
-                    System.out.print("Enter user ID: ");
-                    userDAO.getUserById(readInt());
+                    System.out.print("Enter User ID: ");
+                    int id = sc.nextInt();
+
+                    userDAO.getUserById(id);
                     break;
 
                 case 4:
-                    System.out.print("Enter user ID: ");
-                    int updateId = readInt();
-                    System.out.print("Enter new username: ");
-                    String newUsername = sc.nextLine();
-                    System.out.print("Enter new password: ");
-                    String newPassword = sc.nextLine();
-
-                    userDAO.updateUser(
-                            new User(updateId, newUsername, newPassword));
+                    updateUser();
                     break;
 
                 case 5:
-                    System.out.print("Enter user ID: ");
-                    userDAO.deleteUser(readInt());
+                    System.out.print("Enter User ID to delete: ");
+                    int deleteId = sc.nextInt();
+
+                    userDAO.deleteUser(deleteId);
                     break;
 
                 case 6:
-                    return;
+                    System.out.println("Returning to Main Menu...");
+                    break;
 
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice!");
             }
+
+        } while (choice != 6);
+    }
+
+
+    // =========================================================
+    // ADD USER
+    // =========================================================
+
+    public static void addUser() {
+
+        System.out.println("\n--------- ADD USER ---------");
+
+        System.out.print("Enter User ID: ");
+        int id = sc.nextInt();
+
+        System.out.print("Enter Username: ");
+        String username = sc.next();
+
+        System.out.print("Enter Password: ");
+        String password = sc.next();
+
+        User user = new User(id, username, password);
+
+        userDAO.addUser(user);
+    }
+
+
+    // =========================================================
+    // UPDATE USER
+    // =========================================================
+
+    public static void updateUser() {
+
+        System.out.println("\n--------- UPDATE USER ---------");
+
+        System.out.print("Enter User ID: ");
+        int id = sc.nextInt();
+
+        User user = userDAO.getUserById(id);
+
+        if (user != null) {
+
+            System.out.print("Enter New Username: ");
+            String username = sc.next();
+
+            System.out.print("Enter New Password: ");
+            String password = sc.next();
+
+            user.setUsername(username);
+            user.setPassword(password);
+
+            userDAO.updateUser(user);
+
+        } else {
+
+            System.out.println("User not found.");
         }
     }
 
-    private static void jobPostMenu() {
-        while (true) {
-            System.out.println("\n---------- JOB POST CRUD ----------");
+
+    // =========================================================
+    // JOB POST MENU
+    // =========================================================
+
+    public static void jobPostMenu() {
+
+        int choice;
+
+        do {
+
+            System.out.println("\n=================================");
+            System.out.println("       JOB POST MANAGEMENT");
+            System.out.println("=================================");
             System.out.println("1. Add Job Post");
             System.out.println("2. View All Job Posts");
-            System.out.println("3. View Job Post By ID");
+            System.out.println("3. Search Job Post by ID");
             System.out.println("4. Update Job Post");
             System.out.println("5. Delete Job Post");
-            System.out.println("6. Back");
-            System.out.print("Enter choice: ");
+            System.out.println("6. Back to Main Menu");
+            System.out.println("=================================");
+            System.out.print("Enter your choice: ");
 
-            int choice = readInt();
+            choice = sc.nextInt();
 
             switch (choice) {
+
                 case 1:
-                    System.out.print("Enter post ID: ");
-                    int postId = readInt();
-
-                    System.out.print("Enter user ID: ");
-                    int userId = readInt();
-
-                    System.out.print("Enter profile: ");
-                    String profile = sc.nextLine();
-
-                    System.out.print("Enter description: ");
-                    String description = sc.nextLine();
-
-                    System.out.print("Enter required experience (years), or -1 for NULL: ");
-                    int experience = readInt();
-
-                    Integer reqExperience =
-                            experience == -1 ? null : experience;
-
-                    jobPostDAO.addJobPost(
-                            new JobPost(postId, userId, profile,
-                                    description, reqExperience));
+                    addJobPost();
                     break;
 
                 case 2:
-                    jobPostDAO.getAllJobPosts();
+                    jobPostDAO.getAllJobPosts()
+                        .forEach(System.out::println);
                     break;
 
                 case 3:
-                    System.out.print("Enter post ID: ");
-                    jobPostDAO.getJobPostById(readInt());
+                    System.out.print("Enter Job Post ID: ");
+                    int postId = sc.nextInt();
+
+                    JobPost job = jobPostDAO.getJobPostById(postId);
+
+                    if (job != null) {
+                        System.out.println(job);
+                    } else {
+                        System.out.println("Job Post not found.");
+                    }
+
                     break;
 
                 case 4:
-                    System.out.print("Enter post ID: ");
-                    int updatePostId = readInt();
-
-                    System.out.print("Enter new profile: ");
-                    String newProfile = sc.nextLine();
-
-                    System.out.print("Enter new description: ");
-                    String newDescription = sc.nextLine();
-
-                    System.out.print("Enter new experience (years), or -1 for NULL: ");
-                    int newExperience = readInt();
-
-                    Integer newReqExperience =
-                            newExperience == -1 ? null : newExperience;
-
-                    // user_id is not changed by this update.
-                    jobPostDAO.updateJobPost(
-                            new JobPost(updatePostId, 0, newProfile,
-                                    newDescription, newReqExperience));
+                    updateJobPost();
                     break;
 
                 case 5:
-                    System.out.print("Enter post ID: ");
-                    jobPostDAO.deleteJobPost(readInt());
+                    System.out.print("Enter Job Post ID to delete: ");
+                    int deletePostId = sc.nextInt();
+
+                    jobPostDAO.deleteJobPost(deletePostId);
                     break;
 
                 case 6:
-                    return;
+                    System.out.println("Returning to Main Menu...");
+                    break;
 
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice!");
             }
+
+        } while (choice != 6);
+    }
+
+
+    // =========================================================
+    // ADD JOB POST
+    // =========================================================
+
+    public static void addJobPost() {
+
+        System.out.println("\n--------- ADD JOB POST ---------");
+
+        System.out.print("Enter Post ID: ");
+        int postId = sc.nextInt();
+
+        System.out.print("Enter User ID: ");
+        int userId = sc.nextInt();
+
+        sc.nextLine();
+
+        System.out.print("Enter Job Profile: ");
+        String profile = sc.nextLine();
+
+        System.out.print("Enter Job Description: ");
+        String description = sc.nextLine();
+
+        System.out.print("Enter Required Experience: ");
+        int experience = sc.nextInt();
+
+        JobPost jobPost = new JobPost(
+            postId,
+            userId,
+            profile,
+            description,
+            experience
+        );
+
+        jobPostDAO.addJobPost(jobPost);
+    }
+
+
+    // =========================================================
+    // UPDATE JOB POST
+    // =========================================================
+
+    public static void updateJobPost() {
+
+        System.out.println("\n--------- UPDATE JOB POST ---------");
+
+        System.out.print("Enter Post ID: ");
+        int postId = sc.nextInt();
+
+        JobPost job = jobPostDAO.getJobPostById(postId);
+
+        if (job != null) {
+
+            sc.nextLine();
+
+            System.out.print("Enter New Job Profile: ");
+            String profile = sc.nextLine();
+
+            System.out.print("Enter New Job Description: ");
+            String description = sc.nextLine();
+
+            System.out.print("Enter New Required Experience: ");
+            int experience = sc.nextInt();
+
+            job.setPostProfile(profile);
+            job.setPostDesc(description);
+            job.setReqExperience(experience);
+
+            jobPostDAO.updateJobPost(job);
+
+        } else {
+
+            System.out.println("Job Post not found.");
         }
     }
 
-    private static void techMenu() {
-        while (true) {
-            System.out.println("\n---------- JOB TECH STACK CRUD ----------");
+
+    // =========================================================
+    // TECHNOLOGY MENU
+    // =========================================================
+
+    public static void technologyMenu() {
+
+        int choice;
+
+        do {
+
+            System.out.println("\n=================================");
+            System.out.println("       TECHNOLOGY MANAGEMENT");
+            System.out.println("=================================");
             System.out.println("1. Add Technology");
             System.out.println("2. View All Technologies");
-            System.out.println("3. View Technologies By Post ID");
+            System.out.println("3. View Technologies by Job Post ID");
             System.out.println("4. Update Technology");
             System.out.println("5. Delete Technology");
-            System.out.println("6. Back");
-            System.out.print("Enter choice: ");
+            System.out.println("6. Back to Main Menu");
+            System.out.println("=================================");
+            System.out.print("Enter your choice: ");
 
-            int choice = readInt();
+            choice = sc.nextInt();
 
             switch (choice) {
+
                 case 1:
-                    System.out.print("Enter tech ID: ");
-                    int techId = readInt();
-
-                    System.out.print("Enter post ID: ");
-                    int postId = readInt();
-
-                    System.out.print("Enter technology: ");
-                    String technology = sc.nextLine();
-
-                    techDAO.addTechnology(
-                            new JobTechStack(techId, postId, technology));
+                    addTechnology();
                     break;
 
                 case 2:
@@ -225,43 +368,89 @@ public class Main {
                     break;
 
                 case 3:
-                    System.out.print("Enter post ID: ");
-                    techDAO.getTechnologiesByPostId(readInt());
+                    System.out.print("Enter Job Post ID: ");
+                    int postId = sc.nextInt();
+
+                    techDAO.getTechnologiesByPostId(postId);
                     break;
 
                 case 4:
-                    System.out.print("Enter tech ID: ");
-                    int updateTechId = readInt();
-
-                    System.out.print("Enter new technology: ");
-                    String newTechnology = sc.nextLine();
-
-                    techDAO.updateTechnology(
-                            new JobTechStack(updateTechId, 0, newTechnology));
+                    updateTechnology();
                     break;
 
                 case 5:
-                    System.out.print("Enter tech ID: ");
-                    techDAO.deleteTechnology(readInt());
+                    System.out.print("Enter Technology ID to delete: ");
+                    int techId = sc.nextInt();
+
+                    techDAO.deleteTechnology(techId);
                     break;
 
                 case 6:
-                    return;
+                    System.out.println("Returning to Main Menu...");
+                    break;
 
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice!");
             }
-        }
+
+        } while (choice != 6);
     }
 
-    private static int readInt() {
-        while (true) {
-            try {
-                int value = Integer.parseInt(sc.nextLine().trim());
-                return value;
-            } catch (NumberFormatException e) {
-                System.out.print("Please enter a valid integer: ");
-            }
-        }
+
+    // =========================================================
+    // ADD TECHNOLOGY
+    // =========================================================
+
+    public static void addTechnology() {
+
+        System.out.println("\n--------- ADD TECHNOLOGY ---------");
+
+        System.out.print("Enter Technology ID: ");
+        int techId = sc.nextInt();
+
+        System.out.print("Enter Job Post ID: ");
+        int postId = sc.nextInt();
+
+        sc.nextLine();
+
+        System.out.print("Enter Technology: ");
+        String technology = sc.nextLine();
+
+        JobTechStack tech = new JobTechStack(
+            techId,
+            postId,
+            technology
+        );
+
+        techDAO.addTechnology(tech);
+    }
+
+
+    // =========================================================
+    // UPDATE TECHNOLOGY
+    // =========================================================
+
+    public static void updateTechnology() {
+
+        System.out.println("\n--------- UPDATE TECHNOLOGY ---------");
+
+        System.out.print("Enter Technology ID: ");
+        int techId = sc.nextInt();
+
+        System.out.print("Enter Job Post ID: ");
+        int postId = sc.nextInt();
+
+        sc.nextLine();
+
+        System.out.print("Enter New Technology: ");
+        String technology = sc.nextLine();
+
+        JobTechStack tech = new JobTechStack(
+            techId,
+            postId,
+            technology
+        );
+
+        techDAO.updateTechnology(tech);
     }
 }
