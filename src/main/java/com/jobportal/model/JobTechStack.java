@@ -1,9 +1,22 @@
 package com.jobportal.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "job_tech_stack")
 public class JobTechStack {
 
+    @Id
+    @Column(name = "tech_id")
     private int techId;
+
+    @Column(name = "post_id")
     private int postId;
+
+    @Column(name = "technology")
     private String technology;
 
     public JobTechStack() {
@@ -42,9 +55,9 @@ public class JobTechStack {
     @Override
     public String toString() {
         return "JobTechStack{" +
-                "techId=" + techId +
-                ", postId=" + postId +
-                ", technology='" + technology + '\'' +
-                '}';
+            "techId=" + techId +
+            ", postId=" + postId +
+            ", technology='" + technology + '\'' +
+            '}';
     }
 }
