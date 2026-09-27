@@ -67,7 +67,8 @@ public class JobTechStackDAO {
     }
 
     // READ BY POST ID
-    public void getTechnologiesByPostId(int postId) {
+    // READ BY POST ID
+    public List<JobTechStack> getTechnologiesByPostId(int postId) {
 
         try (Session session =
                  HibernateUtil.getSessionFactory().openSession()) {
@@ -76,7 +77,8 @@ public class JobTechStackDAO {
                 session.createQuery(
                         "FROM JobTechStack WHERE postId = :postId ORDER BY techId",
                         JobTechStack.class
-                    ).setParameter("postId", postId)
+                    )
+                    .setParameter("postId", postId)
                     .getResultList();
 
             if (technologies.isEmpty()) {
@@ -91,10 +93,14 @@ public class JobTechStackDAO {
                 }
             }
 
+            return technologies;
+
         } catch (Exception e) {
 
             System.out.println("Could not read technologies: "
                 + e.getMessage());
+
+            return null;
         }
     }
 

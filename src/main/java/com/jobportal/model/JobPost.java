@@ -19,7 +19,8 @@ public class JobPost {
     @Column(name = "post_profile")
     private String postProfile;
 
-    @Column(name = "post_desc")
+
+    @Column(name = "postDesc", columnDefinition = "TEXT")
     private String postDesc;
 
     @Column(name = "req_experience")

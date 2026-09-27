@@ -1,5 +1,6 @@
 package com.jobportal.config;
 
+import com.jobportal.model.UserSkill;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -14,6 +15,7 @@ public class HibernateUtil {
 
       return new Configuration()
           .configure("hibernate.cfg.xml")
+          .addAnnotatedClass(UserSkill.class)
           .buildSessionFactory();
 
     } catch (Throwable e) {

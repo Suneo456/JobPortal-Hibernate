@@ -1,5 +1,7 @@
 package com.jobportal;
-
+import com.jobportal.Entity.UserSkillDAO;
+import com.jobportal.model.UserSkill;
+import com.jobportal.service.JobRecommendationService;
 import com.jobportal.Entity.JobPostDAO;
 import com.jobportal.Entity.JobTechStackDAO;
 import com.jobportal.Entity.UserDAO.UserDAO;
@@ -13,7 +15,10 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner sc = new Scanner(System.in);
+    static UserSkillDAO userSkillDAO = new UserSkillDAO();
 
+    static JobRecommendationService recommendationService =
+        new JobRecommendationService();
     static UserDAO userDAO = new UserDAO();
     static JobPostDAO jobPostDAO = new JobPostDAO();
     static JobTechStackDAO techDAO = new JobTechStackDAO();
@@ -30,7 +35,8 @@ public class Main {
             System.out.println("1. User Management");
             System.out.println("2. Job Post Management");
             System.out.println("3. Technology Management");
-            System.out.println("4. Exit");
+            System.out.println("4. Smart Job Recommendation");
+            System.out.println("5. Exit");
             System.out.println("=================================");
             System.out.print("Enter your choice: ");
 
@@ -51,6 +57,10 @@ public class Main {
                     break;
 
                 case 4:
+                    recommendationMenu();
+                    break;
+
+                case 5:
                     System.out.println("\nThank you for using Job Portal!");
                     HibernateUtil.shutdown();
                     break;
@@ -59,7 +69,7 @@ public class Main {
                     System.out.println("Invalid choice! Please try again.");
             }
 
-        } while (choice != 4);
+        } while (choice != 5);
 
         sc.close();
     }
@@ -452,5 +462,78 @@ public class Main {
         );
 
         techDAO.updateTechnology(tech);
+    }
+    public static void recommendationMenu() {
+
+        int choice;
+
+        do {
+
+            System.out.println("\n=================================");
+            System.out.println("     SMART JOB RECOMMENDATION");
+            System.out.println("=================================");
+            System.out.println("1. Add User Skill");
+            System.out.println("2. View Recommended Jobs");
+            System.out.println("3. Back to Main Menu");
+            System.out.println("=================================");
+
+            System.out.print("Enter your choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    addUserSkill();
+                    break;
+
+                case 2:
+
+                    System.out.print("Enter User ID: ");
+                    int userId = sc.nextInt();
+
+                    recommendationService.recommendJobs(userId);
+
+                    break;
+
+                case 3:
+
+                    System.out.println(
+                        "Returning to Main Menu..."
+                    );
+
+                    break;
+
+                default:
+
+                    System.out.println(
+                        "Invalid choice!"
+                    );
+            }
+
+        } while (choice != 3);
+    }
+    public static void addUserSkill() {
+
+        System.out.println("\n--------- ADD USER SKILL ---------");
+
+        System.out.print("Enter Skill ID: ");
+        int skillId = sc.nextInt();
+
+        System.out.print("Enter User ID: ");
+        int userId = sc.nextInt();
+
+        sc.nextLine();
+
+        System.out.print("Enter Skill: ");
+        String skill = sc.nextLine();
+
+        UserSkill userSkill =
+            new UserSkill(
+                skillId,
+                userId,
+                skill
+            );
+
+        userSkillDAO.addSkill(userSkill);
     }
 }
