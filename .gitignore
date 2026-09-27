@@ -26,3 +26,4 @@ Thumbs.db
 # Environment / secrets
 .env
 application-local.properties
+src/main/resources/hibernate.cfg.xml
